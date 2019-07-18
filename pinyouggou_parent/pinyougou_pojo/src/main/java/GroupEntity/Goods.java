@@ -4,13 +4,28 @@ import com.pinyougou.pojo.TbGoods;
 import com.pinyougou.pojo.TbGoodsDesc;
 import com.pinyougou.pojo.TbItem;
 
+import javax.sql.rowset.spi.SyncResolver;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class Goods implements Serializable {
     private TbGoods goods;
     private TbGoodsDesc goodsDesc;
     private List<TbItem> itemList;
+
+
+    //分类数据集合
+    private Map<String,String> categoryMap;
+
+    public Map<String, String> getCategoryMap() {
+        return categoryMap;
+    }
+
+    public void setCategoryMap(Map<String, String> categoryMap) {
+        this.categoryMap = categoryMap;
+    }
+
 
     public TbGoods getGoods() {
         return goods;
@@ -35,4 +50,6 @@ public class Goods implements Serializable {
     public void setItemList(List<TbItem> itemList) {
         this.itemList = itemList;
     }
+
+
 }

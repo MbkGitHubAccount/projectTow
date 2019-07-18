@@ -174,25 +174,9 @@ app.controller('goodsController' ,function($scope,$controller,goodsService,itemC
 	}
 
 
-	/**
-	 * 判断规格名称对应的规格对象是否存在与勾选的规格列表中
-	 如果不存在
-	 新增规格对象到勾选的规格列表中
-
-	 如果存在
-	 判断是勾选还是取消勾选规格选择数据
-	 如果勾选
-	 在已存在的规格对象中规格选项列表中添加勾选的规格选项数据
-
-	 取消勾选
-	 在已存在的规格对象中规格选项列表中移除取消勾选的规格选项数据
-
-	 如果规格对象中规格选项列表中的规格选项数据全部移除
-	 这从勾选的规格列表中，移除该规格对象
-	 */
 	$scope.updateSpecAttribute=function ($event,specName,specOptionName) {
 		//判断规格名称对应的规格对象是否存在与勾选的规格列表中  [{"attributeName":"网络","attributeValue":["移动3G"]}]
-		var specObj = $scope.getObjectByValue($scope.entity.goodsDesc,"attributeName",specName);
+		var specObj = $scope.getObjectByValue($scope.entity.goodsDesc.specificationItems,"attributeName",specName);
 
 		if(specObj!=null){// 如果存在
 			// 判断是勾选还是取消勾选规格选择数据
@@ -201,7 +185,6 @@ app.controller('goodsController' ,function($scope,$controller,goodsService,itemC
 				// 在已存在的规格对象中规格选项列表中添加勾选的规格选项数据
 				specObj.attributeValue.push(specOptionName);
 			}else{
-				// 取消勾选
 				// 取消勾选
 				// 在已存在的规格对象中规格选项列表中移除取消勾选的规格选项数据
 				var index = specObj.attributeValue.indexOf(specOptionName);
@@ -235,26 +218,24 @@ app.controller('goodsController' ,function($scope,$controller,goodsService,itemC
 			$scope.entity.itemList = addColumn($scope.entity.itemList,specList[i].attributeName,specList[i].attributeValue);
 		}
 	}
+
 	addColumn=function (list,specName,specOptions) {
 		//定义新的sku列表
-		var newList=[];
-
+		var newList = [];
 		//遍历list列表
-		for(var i=0;i<list.length;i++){
+		for (var i = 0; i < list.length; i++) {
 			//{spec:{},price:0,num : 99999,status:'1',isDefault:'0'}
-			var oldItem =  list[i];
+			var oldItem = list[i];
 			//遍历规格选择数组
-			for(var j=0;j<specOptions.length;j++){
+			for (var j = 0; j < specOptions.length; j++) {
 				//基于深克隆实现对象创建
 				var newItem = JSON.parse(JSON.stringify(oldItem));
-				newItem.spec[specName]=specOptions[j];
+				newItem.spec[specName] = specOptions[j];
 				newList.push(newItem);
 			}
 		}
-
 		return newList;
 	}
-
 
 	//状态数组
 	$scope.status=['未审核','已审核','审核未通过','关闭'];
@@ -306,4 +287,4 @@ app.controller('goodsController' ,function($scope,$controller,goodsService,itemC
 
 
 
-});	
+});

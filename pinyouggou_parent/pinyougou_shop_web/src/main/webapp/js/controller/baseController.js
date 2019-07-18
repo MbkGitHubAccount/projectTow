@@ -30,6 +30,8 @@ app.controller("baseController",function($scope){
 		}
 
 	};
+
+
 	////[{"id":33,"text":"电视屏幕尺寸"}]
 	//把json数据转换成使用逗号分割数据格式
 	$scope.jsonToString = function(jsonList,key){

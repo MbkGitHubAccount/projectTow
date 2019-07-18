@@ -18,9 +18,16 @@ import com.pinyougou.sellergoods.service.ItemService;
 import entity.PageResult;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -257,6 +264,18 @@ public class GoodsServiceImpl implements GoodsService {
 
 		}
     }
+    @Autowired
+    private JmsTemplate jmsTemplate;// 用来向MQ 发送消息
+	@Autowired
+	private Destination addItemPageDestination;
+	@Autowired
+	private Destination deleItemPageDestination;
+	@Autowired
+	private Destination addItemSolrDestination;
+	@Autowired
+	private Destination deleItemSolrDestination;
+
+
 
 	@Override
 	public void updatesIsMarketable(Long[] ids, String isMarketable) {
@@ -267,6 +286,46 @@ public class GoodsServiceImpl implements GoodsService {
 			TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
 			//判断状态是否是1
 			if (tbGoods.getAuditStatus().equals("1")){
+
+				//上架的操作
+				if ("1".equals(isMarketable)){
+					//上架的时候同步索引到索引库 并生成静态页面
+					//向索引库添加索引
+					jmsTemplate.send(addItemSolrDestination, new MessageCreator() {
+						@Override
+						public Message createMessage(Session session) throws JMSException {
+							return session.createTextMessage(id+"");
+						}
+					});
+
+					//生成静态页面
+					jmsTemplate.send(addItemPageDestination, new MessageCreator() {
+						@Override
+						public Message createMessage(Session session) throws JMSException {
+							return session.createTextMessage(id+"");
+						}
+					});
+				}
+
+				//下架操作
+				if ("0".equals(isMarketable)){
+
+					//删除索引库中响应的索引
+					jmsTemplate.send(deleItemSolrDestination, new MessageCreator() {
+						@Override
+						public Message createMessage(Session session) throws JMSException {
+							return  session.createTextMessage(id+"");
+						}
+					});
+
+					//删除静态页面
+					jmsTemplate.send(deleItemPageDestination, new MessageCreator() {
+						@Override
+						public Message createMessage(Session session) throws JMSException {
+							return session.createTextMessage(id+"");
+						}
+					});
+				}
 
 				tbGoods.setIsMarketable(isMarketable);
 				goodsMapper.updateByPrimaryKey(tbGoods);
