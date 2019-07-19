@@ -35,9 +35,9 @@ app.controller('userController' ,function($scope,$controller   ,userService){
 	$scope.save=function(){				
 		var serviceObject;//服务层对象  				
 		if($scope.entity.id!=null){//如果有ID
-			serviceObject=userService.update( $scope.entity ); //修改  
+			serviceObject=userService.update($scope.entity); //修改
 		}else{
-			serviceObject=userService.add( $scope.entity  );//增加 
+			serviceObject=userService.add($scope.entity);//增加
 		}				
 		serviceObject.success(
 			function(response){
@@ -59,7 +59,7 @@ app.controller('userController' ,function($scope,$controller   ,userService){
 			alert("两次输入的密码不一致！")
 			return;
 		}
-		var serviceObject=userService.add($scope.entity);//增加
+		var serviceObject=userService.add($scope.entity,$scope.smsCode);//增加
 		serviceObject.success(
 			function(response){
 				if(response.success){

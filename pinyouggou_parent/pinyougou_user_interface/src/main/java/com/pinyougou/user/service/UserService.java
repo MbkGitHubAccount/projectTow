@@ -59,4 +59,6 @@ public interface UserService {
 	public PageResult findPage(TbUser user, int pageNum, int pageSize);
 
 	void sendSms(String phone);
+
+    String CheckCode(String code, String phone);
 }

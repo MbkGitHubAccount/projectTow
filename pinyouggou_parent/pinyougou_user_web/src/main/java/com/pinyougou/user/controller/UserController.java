@@ -48,11 +48,23 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping("/add")
-	public Result add(@RequestBody TbUser user){
+	public Result add(@RequestBody TbUser user,String Code){
 		try {
+			//0 已被使用  失效
+			//2 验证码错误
+		String resoult=userService.CheckCode(Code,user.getPhone());
+		if (resoult.equals("0")){
+			throw  new RuntimeException("验证码失效");
+		}
+		if (resoult.equals("2")){
+			throw  new RuntimeException("验证码错误！");
+		}
 			userService.add(user);
 			return new Result(true, "增加成功");
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			return new Result(false, e.getMessage());
+		}catch (Exception e) {
 			e.printStackTrace();
 			return new Result(false, "增加失败");
 		}

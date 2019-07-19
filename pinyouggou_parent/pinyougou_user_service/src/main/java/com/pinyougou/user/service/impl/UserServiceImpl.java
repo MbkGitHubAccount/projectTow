@@ -200,12 +200,21 @@ public class UserServiceImpl implements UserService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-
-
-
-
-
 	}
+	//判断验证码是否是相等
+	@Override
+	public String CheckCode(String code, String phone) {
+    	//从缓存中获取当前用户的验证码
+		String sysCode = (String) redisTemplate.boundValueOps(phone).get();
+		//判断验证码失效
+		if (sysCode==null){
+			return "0";
+		}
+		//判断验证码是否是向等
+		if (!sysCode.equals(code)){
+			return "2";
+		}
+		return "1"  ;
+    }
 
 }
